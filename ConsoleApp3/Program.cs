@@ -31,6 +31,20 @@ namespace ConsoleApp3
         }
         static void Version2()
         {
+            int op1 = Conversion("Donnez un premier nombre");
+            int op2 = Conversion("Donnez un deuxième nombre");
+            Console.WriteLine(op1 + op2);
+        }
+        static int Conversion(string message)
+        {
+            bool estConverti = false; int op = 0; string opStr;
+            while (!estConverti)
+            {
+                Console.WriteLine(message);
+                opStr = Console.ReadLine();
+                estConverti = int.TryParse(opStr, out op);
+            }
+            return op;
         }
     }
 }
