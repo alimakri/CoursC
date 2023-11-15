@@ -8,8 +8,22 @@ namespace ConsoleApp2
 {
     internal class Program
     {
+        static double[] SinCosTang(double val)
+        {
+            var sin = Math.Sin(val);
+            var tg = Math.Tan(val);
+            var cos = Math.Cos(val);
+            return new double[3] { sin, cos, tg };
+        }
         static void Main(string[] args)
         {
+            // Méthode retournant 3 nombres
+            double[] resultat = SinCosTang(0);
+            for(int i=0; i< resultat.Length; i++)
+            {
+                Console.WriteLine(resultat[i]);
+            }
+
             // Tableau de caractères
             string s = Console.ReadLine();
             Console.WriteLine("le premier caractère est {0}", s[0]);
@@ -33,6 +47,7 @@ namespace ConsoleApp2
             tableauTableauEntier[1, 1] = 4;
             Console.WriteLine("le 3e est {0}", tableauTableauEntier[1, 0]);
             Console.ReadLine();
+
         }
     }
 }
