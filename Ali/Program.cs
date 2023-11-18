@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,40 +12,41 @@ namespace Ali
         static void Main(string[] args)
         {
             var partie = new Partie();
-            partie.Humain = new Joueur();
-            partie.Machine = new Joueur();
-            int i = 0;
-
             while (partie.PasFinie())
             {
-                partie.GetProposition(true);
-                partie.GetProposition(false);
-                i = partie.Comparer();
-                partie.AffecterPoints(i);
-                partie.AfficherScore();
+                partie.GetProposition(JoueurEnum.Humain);
+                partie.GetProposition(JoueurEnum.Machine);
+                partie.Comparer();
+                partie.AfficherScore(ScoreEnum.Intermediaire);
             }
+            partie.AfficherScore(ScoreEnum.Final);
 
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            if (partie.Humain.NbPoint == 3) Console.WriteLine("Bravo !"); else Console.WriteLine("Dommage !");
             Console.ReadLine();
         }
     }
     enum PropositionEnum { Pierre = 1, Feuille = 2, Ciseau = 3 }
+    enum JoueurEnum { Humain, Machine }
+    enum ScoreEnum { Intermediaire, Final }
     class Partie
     {
         public Joueur Humain;
         public Joueur Machine;
         private Random Random = new Random();
+        public Partie()
+        {
+            Humain = new Joueur();
+            Machine = new Joueur();
 
+        }
         public bool PasFinie()
         {
             return Humain.PasGagne() && Machine.PasGagne();
         }
 
-        public void GetProposition(bool humain)
+        public void GetProposition(JoueurEnum joueur)
         {
             string saisie = null; int proposition = 0;
-            if (humain)
+            if (joueur == JoueurEnum.Humain)
             {
                 proposition = 0;
                 while (proposition == 0)
@@ -55,7 +57,7 @@ namespace Ali
                     saisie = Console.ReadLine();
                     int.TryParse(saisie, out proposition);
                 }
-                Humain.Proposition = (PropositionEnum) proposition;
+                Humain.Proposition = (PropositionEnum)proposition;
             }
             else
             {
@@ -63,11 +65,11 @@ namespace Ali
             }
         }
 
-        public int Comparer()
+        public void Comparer()
         {
             int resultat = 0;
             // Egalite
-            if (Humain.Proposition == Machine.Proposition) resultat= 0;
+            if (Humain.Proposition == Machine.Proposition) resultat = 0;
             // Humain gagne
             else if (
                 (Humain.Proposition == PropositionEnum.Pierre && Machine.Proposition == PropositionEnum.Ciseau) ||
@@ -75,32 +77,41 @@ namespace Ali
                 (Humain.Proposition == PropositionEnum.Ciseau && Machine.Proposition == PropositionEnum.Feuille)
                 )
             {
-                resultat= 1;
+                resultat = 1;
             }
             // Machine Gagne
-            else resultat =- 1;
+            else resultat = -1;
 
             // Affichage
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.WriteLine("{0} - {1}", Humain.Proposition.ToString(), Machine.Proposition.ToString());
 
-            return resultat;
+            AffecterPoints(resultat);
         }
-
-        public void AfficherScore()
-        {
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("{0} - {1}", Humain.NbPoint, Machine.NbPoint);
-        }
-
         public void AffecterPoints(int i)
         {
-            switch(i)
+            switch (i)
             {
                 case 1: Humain.NbPoint++; Machine.NbPoint = 0; break;
                 case -1: Machine.NbPoint++; Humain.NbPoint = 0; break;
             }
         }
+
+        public void AfficherScore(ScoreEnum scoreType)
+        {
+            switch (scoreType)
+            {
+                case ScoreEnum.Intermediaire:
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine("{0} - {1}", Humain.NbPoint, Machine.NbPoint);
+                    break;
+                case ScoreEnum.Final:
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    if (Humain.NbPoint == 3) Console.WriteLine("Bravo !"); else Console.WriteLine("Dommage !");
+                    break;
+            }
+        }
+
     }
     class Joueur
     {
